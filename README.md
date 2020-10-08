@@ -10,7 +10,7 @@
 1. Run the Flask API locally for testing. Go to directory with `app.py`.
 
 ```bash
-python app.py
+python3 app.py
 ```
 
 
