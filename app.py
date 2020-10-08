@@ -66,8 +66,11 @@ class PredictSentiment(Resource):
 
 # Setup the Api resource routing here
 # Route the URL to the resource
-api.add_resource(PredictSentiment, '/')
+api.add_resource(PredictSentiment, '/api/predict')
 
+@app.route('/')
+def index():
+    return "<h1>Welcome to our webapi!</h1>"
 
 if __name__ == '__main__':
     app.run(debug=True)
