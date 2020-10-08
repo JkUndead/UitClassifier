@@ -1,5 +1,4 @@
 tensorflow
-numpy==1.19.0
 flask
 flask_restful
 gunicorn==20.0.4 
