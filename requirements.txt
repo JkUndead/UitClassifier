@@ -3,3 +3,4 @@ flask
 flask_restful
 gunicorn==20.0.4 
 keras
+flask-cors

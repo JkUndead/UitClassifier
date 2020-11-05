@@ -6,12 +6,14 @@ from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
 import pickle
 import numpy as np
+from flask_cors import CORS
 
 from keras.models import model_from_json
 from keras.optimizers import RMSprop
 from keras.preprocessing import sequence
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 #load tokenizer
