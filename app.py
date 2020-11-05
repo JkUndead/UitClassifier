@@ -34,36 +34,41 @@ model.compile(loss='binary_crossentropy',optimizer=RMSprop(),metrics=['accuracy'
 
 # argument parsing
 parser = reqparse.RequestParser()
-parser.add_argument('query')
-
+# parser.add_argument('query')
+parser.add_argument('name', action='split')
 
 class PredictSentiment(Resource):
     def get(self):
         # use parser and find the user's query
         args = parser.parse_args()
-        user_query = args['query']
+        user_queries = args['name']
+        if(type(user_queries) == type('')):
+            user_queries = [user_queries]  
+        outputs = {'results': []}
+        for user_query in user_queries:
 
-        # vectorize the user's query and make a prediction
-        X_test = np.array([user_query])
-        test_sequences = tokenizer.texts_to_sequences(X_test)
-        test_sequences_matrix = sequence.pad_sequences(test_sequences,maxlen=150)
+            # vectorize the user's query and make a prediction   
+            X_test = np.array([user_query])
+            test_sequences = tokenizer.texts_to_sequences(X_test)
+            test_sequences_matrix = sequence.pad_sequences(test_sequences,maxlen=150)
+            
+            # make prediction
+            prediction = model.predict(test_sequences_matrix)
+            confidence = prediction[0]
+
+            # Output either 'Male' or 'Female' and calculate confidence rate
+            if confidence[0] < 0.5:
+                pred_text = 'Female'
+                confidence = round((1-confidence[0])*100,2)
+            else:
+                pred_text = 'Male'
+                confidence = round(confidence[0]*100,2)
+
+            # create JSON object
+            result = {'name': user_query ,'prediction': pred_text, 'confidence': confidence}
+            outputs['results'].append(result)
         
-        # make prediction
-        prediction = model.predict(test_sequences_matrix)
-        confidence = prediction[0]
-
-        # Output either 'Male' or 'Female' and calculate confidence rate
-        if confidence[0] < 0.5:
-            pred_text = 'Female'
-            confidence = round((1-confidence[0])*100,2)
-        else:
-            pred_text = 'Male'
-            confidence = round(confidence[0]*100,2)
-
-        # create JSON object
-        output = {'prediction': pred_text, 'confidence': confidence}
-        
-        return output
+        return outputs
 
 
 # Setup the Api resource routing here
